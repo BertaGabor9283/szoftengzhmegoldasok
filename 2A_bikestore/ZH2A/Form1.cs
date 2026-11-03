@@ -85,9 +85,9 @@ namespace ZH2A
             Models.Product? product = productBindingSource.Current as Models.Product;
             if (store == null || product == null) return;
 
-            if (!int.TryParse(textBoxQuantity.Text, out int quantity))
+            if (!int.TryParse(textBoxQuantity.Text, out int quantity) || quantity <= 0)
             {
-                MessageBox.Show("A mennyiség nem érvényes egész szám!");
+                MessageBox.Show("A mennyiség pozitív egész szám kell legyen!");
                 return;
             }
 
@@ -172,6 +172,9 @@ namespace ZH2A
             using (FormProducts form = new FormProducts(context))
             {
                 form.ShowDialog();
+
+                // Mentés nélküli bezárás: a mentetlen változtatások elvesznek (nem maradnak a közös context-ben)
+                ResetFailedChanges();
             }
 
             // a termékek újraolvasása a lista frissítéséhez

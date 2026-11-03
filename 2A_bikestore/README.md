@@ -22,6 +22,7 @@ Visual Studio-ban nyisd meg a `ZH2A.slnx` fájlt (`ZH2A/ZH2A.csproj`, net10.0-wi
 ## Megjegyzések
 - A `FormProducts` konstruktora megkapja a `Form1` `context`-jét, így közös a szerkesztés. A rács forrása `context.Products.Local.ToBindingList()` (a `Microsoft.EntityFrameworkCore` using kell hozzá), ezért a hozzáadás, módosítás és törlés követve van; a `Mentés` gomb egyetlen `SaveChanges()`.
 - A `FormProducts` bezárása után `Form1` újraolvassa a termékeket (`ReadProducts()`).
+- A `Mentés` gomb nélküli bezárás eldobja a mentetlen változtatásokat (`ResetFailedChanges()`), így azok nem maradnak a közös `context`-ben.
 - Új sornál a márkát és a kategóriát ki kell választani, különben az adatbázis idegen kulcs hibát jelez (a hibaüzenet `MessageBox`-ban jelenik meg).
 - A `ProductSk` oszlop rejtett és csak olvasható; navigációs oszlopok nincsenek.
-- A `FormProducts` paraméter nélküli konstruktora csak a Visual Studio tervezőjének kell.
+- A `FormProducts` paraméter nélküli konstruktora kényelmi konstruktor (önálló megnyitáshoz), a Visual Studio tervezőnek nincs rá szüksége; futáskor a `context`-et átvevő konstruktort használjuk.

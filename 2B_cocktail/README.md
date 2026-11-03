@@ -25,7 +25,8 @@ Visual Studio-ban nyisd meg a `ZH2B.slnx` fájlt (`ZH2B/ZH2B.csproj`, net10.0-wi
 - A mennyiség mezőben a tizedesvessző és a tizedespont is elfogadott.
 - A `FormCocktails` konstruktora megkapja a `Form1` `context`-jét, így közös a szerkesztés. A rács forrása `context.Cocktails.Local.ToBindingList()` (a `Microsoft.EntityFrameworkCore` using kell hozzá), ezért a hozzáadás, módosítás és törlés követve van; a `Mentés` gomb egyetlen `SaveChanges()`.
 - A `FormCocktails` bezárása után `Form1` újraolvassa a koktélokat (`ReadCocktails()`).
-- Olyan koktél, amelyhez recept tartozik, nem törölhető (idegen kulcs hiba); a hibaüzenet `MessageBox`-ban jelenik meg.
+- A `Mentés` gomb nélküli bezárás eldobja a mentetlen változtatásokat (`ResetFailedChanges()`), így azok nem maradnak a közös `context`-ben.
+- Ha a koktélhoz recept tartozik, a törlés mentése hibát adhat (idegen kulcs); a hibaüzenet `MessageBox`-ban jelenik meg.
 - A `CocktailSk` oszlop rejtett és csak olvasható; navigációs oszlopok nincsenek.
-- A `FormCocktails` paraméter nélküli konstruktora csak a Visual Studio tervezőjének kell.
+- A `FormCocktails` paraméter nélküli konstruktora kényelmi konstruktor (önálló megnyitáshoz), a Visual Studio tervezőnek nincs rá szüksége; futáskor a `context`-et átvevő konstruktort használjuk.
 - A `Properties/DataSources/*.datasource` fájlok a Visual Studio adatforrás-kezelőjéhez kellenek.

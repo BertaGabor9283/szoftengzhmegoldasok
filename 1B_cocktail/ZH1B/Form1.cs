@@ -170,28 +170,37 @@ namespace ZH1B
         // Ⓐ Cocktail tábla mentése XML-be
         private void buttonSaveXml_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "XML fájl (*.xml)|*.xml";
-            sfd.FileName = "cocktails.xml";
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-
-            var cocktails = (from x in context.Cocktails
-                             orderby x.CocktailSk
-                             select new CocktailXml
-                             {
-                                 CocktailSk = x.CocktailSk,
-                                 Name = x.Name,
-                                 TypeFk = x.TypeFk,
-                                 Price = x.Price
-                             }).ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<CocktailXml>));
-            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+            using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                serializer.Serialize(sw, cocktails);
-            }
+                sfd.Filter = "XML fájl (*.xml)|*.xml";
+                sfd.FileName = "cocktails.xml";
+                if (sfd.ShowDialog() != DialogResult.OK) return;
 
-            MessageBox.Show("A mentés sikeres.");
+                try
+                {
+                    var cocktails = (from x in context.Cocktails
+                                     orderby x.CocktailSk
+                                     select new CocktailXml
+                                     {
+                                         CocktailSk = x.CocktailSk,
+                                         Name = x.Name,
+                                         TypeFk = x.TypeFk,
+                                         Price = x.Price
+                                     }).ToList();
+
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<CocktailXml>));
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                    {
+                        serializer.Serialize(sw, cocktails);
+                    }
+
+                    MessageBox.Show("A mentés sikeres.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }

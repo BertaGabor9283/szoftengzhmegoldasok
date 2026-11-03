@@ -13,7 +13,7 @@ namespace ZH2B
             this.context = context;
         }
 
-        // csak a Visual Studio tervezőjének kell (futáskor a másik konstruktort használjuk)
+        // kényelmi konstruktor önálló megnyitáshoz (futáskor a context-et átvevő konstruktort használjuk)
         public FormCocktails() : this(new Models.SeCocktailsContext())
         {
         }

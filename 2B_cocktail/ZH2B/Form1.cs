@@ -167,6 +167,9 @@ namespace ZH2B
             using (FormCocktails form = new FormCocktails(context))
             {
                 form.ShowDialog();
+
+                // Mentés nélküli bezárás: a mentetlen változtatások elvesznek (nem maradnak a közös context-ben)
+                ResetFailedChanges();
             }
 
             // a koktélok újraolvasása a lista frissítéséhez

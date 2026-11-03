@@ -91,9 +91,9 @@ namespace ZH1A
             Models.Product? product = productBindingSource.Current as Models.Product;
             if (store == null || product == null) return;
 
-            if (!int.TryParse(textBoxQuantity.Text, out int quantity))
+            if (!int.TryParse(textBoxQuantity.Text, out int quantity) || quantity <= 0)
             {
-                MessageBox.Show("A mennyiség nem érvényes egész szám!");
+                MessageBox.Show("A mennyiség pozitív egész szám kell legyen!");
                 return;
             }
 
@@ -125,6 +125,28 @@ namespace ZH1A
             ReadStocks();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // ⑨ törlés
         private void buttonDelete_Click(object sender, EventArgs e)
         {
@@ -143,6 +165,7 @@ namespace ZH1A
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -152,30 +175,39 @@ namespace ZH1A
         // Ⓐ Products tábla mentése XML-be
         private void buttonSaveXml_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "XML fájl (*.xml)|*.xml";
-            sfd.FileName = "products.xml";
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-
-            var products = (from x in context.Products
-                            orderby x.ProductSk
-                            select new ProductXml
-                            {
-                                ProductSk = x.ProductSk,
-                                ProductName = x.ProductName,
-                                BrandId = x.BrandId,
-                                CategoryFk = x.CategoryFk,
-                                ModelYear = x.ModelYear,
-                                ListPrice = x.ListPrice
-                            }).ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<ProductXml>));
-            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+            using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                serializer.Serialize(sw, products);
-            }
+                sfd.Filter = "XML fájl (*.xml)|*.xml";
+                sfd.FileName = "products.xml";
+                if (sfd.ShowDialog() != DialogResult.OK) return;
 
-            MessageBox.Show("A mentés sikeres.");
+                try
+                {
+                    var products = (from x in context.Products
+                                    orderby x.ProductSk
+                                    select new ProductXml
+                                    {
+                                        ProductSk = x.ProductSk,
+                                        ProductName = x.ProductName,
+                                        BrandId = x.BrandId,
+                                        CategoryFk = x.CategoryFk,
+                                        ModelYear = x.ModelYear,
+                                        ListPrice = x.ListPrice
+                                    }).ToList();
+
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<ProductXml>));
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                    {
+                        serializer.Serialize(sw, products);
+                    }
+
+                    MessageBox.Show("A mentés sikeres.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }

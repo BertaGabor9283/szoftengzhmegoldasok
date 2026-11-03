@@ -13,7 +13,7 @@ namespace ZH2A
             this.context = context;
         }
 
-        // csak a Visual Studio tervezőjének kell (futáskor a másik konstruktort használjuk)
+        // kényelmi konstruktor önálló megnyitáshoz (futáskor a context-et átvevő konstruktort használjuk)
         public FormProducts() : this(new Models.SeBikestoreContext())
         {
         }

@@ -85,9 +85,9 @@ namespace ZH3B
             Models.Product? product = productBindingSource.Current as Models.Product;
             if (store == null || product == null) return;
 
-            if (!int.TryParse(textBoxQuantity.Text, out int quantity))
+            if (!int.TryParse(textBoxQuantity.Text, out int quantity) || quantity <= 0)
             {
-                MessageBox.Show("A mennyiség nem érvényes egész szám!");
+                MessageBox.Show("A mennyiség pozitív egész szám kell legyen!");
                 return;
             }
 
@@ -119,6 +119,28 @@ namespace ZH3B
             ReadStocks();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // ⑨ törlés
         private void buttonDelete_Click(object sender, EventArgs e)
         {
@@ -137,6 +159,7 @@ namespace ZH3B
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -146,19 +169,21 @@ namespace ZH3B
         // Ⓐ új bolt felvétele külön űrlapon, csak OK esetén kerül az adatbázisba
         private void buttonNewStore_Click(object sender, EventArgs e)
         {
-            FormAddStore form = new FormAddStore();
-            if (form.ShowDialog() != DialogResult.OK) return;
-
-            context.Stores.Add(form.NewStore);
-
-            try
+            using (FormAddStore form = new FormAddStore())
             {
-                context.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                context.Entry(form.NewStore).State = EntityState.Detached;
-                MessageBox.Show(ex.Message);
+                if (form.ShowDialog() != DialogResult.OK) return;
+
+                context.Stores.Add(form.NewStore);
+
+                try
+                {
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    context.Entry(form.NewStore).State = EntityState.Detached;
+                    MessageBox.Show(ex.Message);
+                }
             }
 
             ReadStores();
