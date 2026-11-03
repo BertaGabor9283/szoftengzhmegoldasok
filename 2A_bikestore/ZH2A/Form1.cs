@@ -119,6 +119,28 @@ namespace ZH2A
             ReadStocks();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // ⑨ törlés
         private void buttonDelete_Click(object sender, EventArgs e)
         {
@@ -137,6 +159,7 @@ namespace ZH2A
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -146,8 +169,10 @@ namespace ZH2A
         // Ⓐ termékek kezelése külön űrlapon (a context-et átadjuk, hogy közös legyen a szerkesztés)
         private void buttonProducts_Click(object sender, EventArgs e)
         {
-            FormProducts form = new FormProducts(context);
-            form.ShowDialog();
+            using (FormProducts form = new FormProducts(context))
+            {
+                form.ShowDialog();
+            }
 
             // a termékek újraolvasása a lista frissítéséhez
             ReadProducts();

@@ -89,9 +89,9 @@ namespace ZH2B
 
             // a tizedesvessző és a tizedespont is elfogadott
             string text = textBoxQuantity.Text.Trim().Replace(',', '.');
-            if (!decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal quantity))
+            if (!decimal.TryParse(text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal quantity) || quantity <= 0)
             {
-                MessageBox.Show("A mennyiség nem érvényes szám!");
+                MessageBox.Show("A mennyiség nem érvényes, pozitív szám!");
                 return;
             }
 
@@ -115,6 +115,28 @@ namespace ZH2B
             ReadRecipes();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // ⑨ törlés
         private void buttonDelete_Click(object sender, EventArgs e)
         {
@@ -132,6 +154,7 @@ namespace ZH2B
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -141,8 +164,10 @@ namespace ZH2B
         // Ⓐ koktélok kezelése külön űrlapon (a context-et átadjuk, hogy közös legyen a szerkesztés)
         private void buttonCocktails_Click(object sender, EventArgs e)
         {
-            FormCocktails form = new FormCocktails(context);
-            form.ShowDialog();
+            using (FormCocktails form = new FormCocktails(context))
+            {
+                form.ShowDialog();
+            }
 
             // a koktélok újraolvasása a lista frissítéséhez
             ReadCocktails();
