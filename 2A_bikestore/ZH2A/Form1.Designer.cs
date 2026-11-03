@@ -1,0 +1,240 @@
+namespace ZH2A
+{
+    partial class Form1
+    {
+        /// <summary>
+        ///  Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        ///  Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        ///  Required method for Designer support - do not modify
+        ///  the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            components = new System.ComponentModel.Container();
+            textBoxStoreFilter = new TextBox();
+            listBoxStores = new ListBox();
+            storeBindingSource = new BindingSource(components);
+            dataGridViewStocks = new DataGridView();
+            storeIdDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            productIdDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            productNameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            quantityDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            detailedStockItemBindingSource = new BindingSource(components);
+            textBoxQuantity = new TextBox();
+            buttonAdd = new Button();
+            buttonDelete = new Button();
+            textBoxProductFilter = new TextBox();
+            listBoxProducts = new ListBox();
+            productBindingSource = new BindingSource(components);
+            buttonProducts = new Button();
+            ((System.ComponentModel.ISupportInitialize)storeBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewStocks).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)detailedStockItemBindingSource).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)productBindingSource).BeginInit();
+            SuspendLayout();
+            //
+            // textBoxStoreFilter
+            //
+            textBoxStoreFilter.Location = new Point(24, 24);
+            textBoxStoreFilter.Name = "textBoxStoreFilter";
+            textBoxStoreFilter.Size = new Size(220, 27);
+            textBoxStoreFilter.TabIndex = 0;
+            textBoxStoreFilter.TextChanged += textBoxStoreFilter_TextChanged;
+            //
+            // listBoxStores
+            //
+            listBoxStores.DataSource = storeBindingSource;
+            listBoxStores.DisplayMember = "StoreName";
+            listBoxStores.FormattingEnabled = true;
+            listBoxStores.Location = new Point(24, 64);
+            listBoxStores.Name = "listBoxStores";
+            listBoxStores.Size = new Size(220, 384);
+            listBoxStores.TabIndex = 1;
+            //
+            // storeBindingSource
+            //
+            storeBindingSource.DataSource = typeof(Models.Store);
+            storeBindingSource.CurrentChanged += storeBindingSource_CurrentChanged;
+            //
+            // dataGridViewStocks
+            //
+            dataGridViewStocks.AllowUserToAddRows = false;
+            dataGridViewStocks.AllowUserToDeleteRows = false;
+            dataGridViewStocks.AutoGenerateColumns = false;
+            dataGridViewStocks.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewStocks.Columns.AddRange(new DataGridViewColumn[] { storeIdDataGridViewTextBoxColumn, productIdDataGridViewTextBoxColumn, productNameDataGridViewTextBoxColumn, quantityDataGridViewTextBoxColumn });
+            dataGridViewStocks.DataSource = detailedStockItemBindingSource;
+            dataGridViewStocks.Location = new Point(264, 64);
+            dataGridViewStocks.MultiSelect = false;
+            dataGridViewStocks.Name = "dataGridViewStocks";
+            dataGridViewStocks.ReadOnly = true;
+            dataGridViewStocks.RowHeadersWidth = 51;
+            dataGridViewStocks.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewStocks.Size = new Size(420, 384);
+            dataGridViewStocks.TabIndex = 2;
+            //
+            // storeIdDataGridViewTextBoxColumn
+            //
+            storeIdDataGridViewTextBoxColumn.DataPropertyName = "StoreId";
+            storeIdDataGridViewTextBoxColumn.HeaderText = "StoreId";
+            storeIdDataGridViewTextBoxColumn.MinimumWidth = 6;
+            storeIdDataGridViewTextBoxColumn.Name = "storeIdDataGridViewTextBoxColumn";
+            storeIdDataGridViewTextBoxColumn.ReadOnly = true;
+            storeIdDataGridViewTextBoxColumn.Visible = false;
+            storeIdDataGridViewTextBoxColumn.Width = 125;
+            //
+            // productIdDataGridViewTextBoxColumn
+            //
+            productIdDataGridViewTextBoxColumn.DataPropertyName = "ProductId";
+            productIdDataGridViewTextBoxColumn.HeaderText = "ProductId";
+            productIdDataGridViewTextBoxColumn.MinimumWidth = 6;
+            productIdDataGridViewTextBoxColumn.Name = "productIdDataGridViewTextBoxColumn";
+            productIdDataGridViewTextBoxColumn.ReadOnly = true;
+            productIdDataGridViewTextBoxColumn.Visible = false;
+            productIdDataGridViewTextBoxColumn.Width = 125;
+            //
+            // productNameDataGridViewTextBoxColumn
+            //
+            productNameDataGridViewTextBoxColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            productNameDataGridViewTextBoxColumn.DataPropertyName = "ProductName";
+            productNameDataGridViewTextBoxColumn.HeaderText = "ProductName";
+            productNameDataGridViewTextBoxColumn.MinimumWidth = 6;
+            productNameDataGridViewTextBoxColumn.Name = "productNameDataGridViewTextBoxColumn";
+            productNameDataGridViewTextBoxColumn.ReadOnly = true;
+            //
+            // quantityDataGridViewTextBoxColumn
+            //
+            quantityDataGridViewTextBoxColumn.DataPropertyName = "Quantity";
+            quantityDataGridViewTextBoxColumn.HeaderText = "Quantity";
+            quantityDataGridViewTextBoxColumn.MinimumWidth = 6;
+            quantityDataGridViewTextBoxColumn.Name = "quantityDataGridViewTextBoxColumn";
+            quantityDataGridViewTextBoxColumn.ReadOnly = true;
+            quantityDataGridViewTextBoxColumn.Width = 90;
+            //
+            // detailedStockItemBindingSource
+            //
+            detailedStockItemBindingSource.DataSource = typeof(DetailedStockItem);
+            //
+            // textBoxQuantity
+            //
+            textBoxQuantity.Location = new Point(704, 160);
+            textBoxQuantity.Name = "textBoxQuantity";
+            textBoxQuantity.Size = new Size(80, 27);
+            textBoxQuantity.TabIndex = 3;
+            textBoxQuantity.Text = "1";
+            //
+            // buttonAdd
+            //
+            buttonAdd.Location = new Point(704, 200);
+            buttonAdd.Name = "buttonAdd";
+            buttonAdd.Size = new Size(80, 50);
+            buttonAdd.TabIndex = 4;
+            buttonAdd.Text = "+";
+            buttonAdd.UseVisualStyleBackColor = true;
+            buttonAdd.Click += buttonAdd_Click;
+            //
+            // buttonDelete
+            //
+            buttonDelete.Location = new Point(704, 260);
+            buttonDelete.Name = "buttonDelete";
+            buttonDelete.Size = new Size(80, 50);
+            buttonDelete.TabIndex = 5;
+            buttonDelete.Text = "-";
+            buttonDelete.UseVisualStyleBackColor = true;
+            buttonDelete.Click += buttonDelete_Click;
+            //
+            // textBoxProductFilter
+            //
+            textBoxProductFilter.Location = new Point(804, 24);
+            textBoxProductFilter.Name = "textBoxProductFilter";
+            textBoxProductFilter.Size = new Size(260, 27);
+            textBoxProductFilter.TabIndex = 6;
+            textBoxProductFilter.TextChanged += textBoxProductFilter_TextChanged;
+            //
+            // listBoxProducts
+            //
+            listBoxProducts.DataSource = productBindingSource;
+            listBoxProducts.DisplayMember = "ProductName";
+            listBoxProducts.FormattingEnabled = true;
+            listBoxProducts.Location = new Point(804, 64);
+            listBoxProducts.Name = "listBoxProducts";
+            listBoxProducts.Size = new Size(260, 384);
+            listBoxProducts.TabIndex = 7;
+            //
+            // productBindingSource
+            //
+            productBindingSource.DataSource = typeof(Models.Product);
+            //
+            // buttonProducts
+            //
+            buttonProducts.Location = new Point(804, 458);
+            buttonProducts.Name = "buttonProducts";
+            buttonProducts.Size = new Size(260, 32);
+            buttonProducts.TabIndex = 9;
+            buttonProducts.Text = "Termékek kezelése";
+            buttonProducts.UseVisualStyleBackColor = true;
+            buttonProducts.Click += buttonProducts_Click;
+            //
+            // Form1
+            //
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1090, 510);
+            Controls.Add(buttonProducts);
+            Controls.Add(listBoxProducts);
+            Controls.Add(textBoxProductFilter);
+            Controls.Add(buttonDelete);
+            Controls.Add(buttonAdd);
+            Controls.Add(textBoxQuantity);
+            Controls.Add(dataGridViewStocks);
+            Controls.Add(listBoxStores);
+            Controls.Add(textBoxStoreFilter);
+            Name = "Form1";
+            Text = "Form1";
+            Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)storeBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataGridViewStocks).EndInit();
+            ((System.ComponentModel.ISupportInitialize)detailedStockItemBindingSource).EndInit();
+            ((System.ComponentModel.ISupportInitialize)productBindingSource).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+
+        private TextBox textBoxStoreFilter;
+        private ListBox listBoxStores;
+        private BindingSource storeBindingSource;
+        private DataGridView dataGridViewStocks;
+        private DataGridViewTextBoxColumn storeIdDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn productIdDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn productNameDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn quantityDataGridViewTextBoxColumn;
+        private BindingSource detailedStockItemBindingSource;
+        private TextBox textBoxQuantity;
+        private Button buttonAdd;
+        private Button buttonDelete;
+        private TextBox textBoxProductFilter;
+        private ListBox listBoxProducts;
+        private BindingSource productBindingSource;
+        private Button buttonProducts;
+    }
+}

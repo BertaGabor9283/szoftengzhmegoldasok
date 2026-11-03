@@ -1,0 +1,61 @@
+using Microsoft.EntityFrameworkCore;
+
+namespace ZH2A
+{
+    public partial class FormProducts : Form
+    {
+        Models.SeBikestoreContext context;
+
+        // a Form1 context-jét kapjuk meg, így közös a szerkesztés
+        public FormProducts(Models.SeBikestoreContext context)
+        {
+            InitializeComponent();
+            this.context = context;
+        }
+
+        // csak a Visual Studio tervezőjének kell (futáskor a másik konstruktort használjuk)
+        public FormProducts() : this(new Models.SeBikestoreContext())
+        {
+        }
+
+        private void FormProducts_Load(object sender, EventArgs e)
+        {
+            // Ⓑ a legördülő oszlopok adatforrásai (márkák, kategóriák)
+            brandBindingSource.DataSource = (from x in context.Brands
+                                             orderby x.BrandName
+                                             select x).ToList();
+
+            categoryBindingSource.DataSource = (from x in context.Categories
+                                                orderby x.CategoryName
+                                                select x).ToList();
+
+            // Ⓐ a termékek betöltése; a Local.ToBindingList() miatt a rácson végzett
+            // hozzáadás / módosítás / törlés követve lesz a context-ben
+            context.Products.Load();
+            productBindingSource.DataSource = context.Products.Local.ToBindingList();
+        }
+
+        // Ⓐ mentés
+        private void buttonSave_Click(object sender, EventArgs e)
+        {
+            dataGridViewProducts.EndEdit();
+            productBindingSource.EndEdit();
+
+            try
+            {
+                context.SaveChanges();
+                MessageBox.Show("A mentés sikeres.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        // az új sor üres (0 értékű) idegen kulcsa nincs a legördülő listában, ezért ne dobjon hibát
+        private void dataGridViewProducts_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            e.ThrowException = false;
+        }
+    }
+}
