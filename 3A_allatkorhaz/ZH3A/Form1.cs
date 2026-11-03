@@ -92,7 +92,7 @@ namespace ZH3A
                     select new ProcedureDoneItem
                     {
                         ProcedureDoneSk = x.ProcedureDoneSk,
-                        Name = x.ProcedureFkNavigation.Name ?? ""
+                        Name = x.ProcedureFkNavigation!.Name ?? ""
                     };
 
             procedureDoneItemBindingSource.DataSource = l.ToList();
@@ -127,26 +127,34 @@ namespace ZH3A
         // Ⓐ Animal tábla mentése XML-be
         private void buttonSaveXml_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
+            using SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "XML fájl (*.xml)|*.xml";
             sfd.FileName = "animals.xml";
             if (sfd.ShowDialog() != DialogResult.OK) return;
 
-            var animals = (from x in context.Animals
-                           orderby x.AnimalSk
-                           select new AnimalXml
-                           {
-                               AnimalSk = x.AnimalSk,
-                               Name = x.Name,
-                               OwnerFk = x.OwnerFk,
-                               BirthYear = x.BirthYear,
-                               SpeciesFk = x.SpeciesFk
-                           }).ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<AnimalXml>));
-            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+            try
             {
-                serializer.Serialize(sw, animals);
+                var animals = (from x in context.Animals
+                               orderby x.AnimalSk
+                               select new AnimalXml
+                               {
+                                   AnimalSk = x.AnimalSk,
+                                   Name = x.Name,
+                                   OwnerFk = x.OwnerFk,
+                                   BirthYear = x.BirthYear,
+                                   SpeciesFk = x.SpeciesFk
+                               }).ToList();
+
+                XmlSerializer serializer = new XmlSerializer(typeof(List<AnimalXml>));
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                {
+                    serializer.Serialize(sw, animals);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
             }
 
             MessageBox.Show("A mentés sikeres.");
