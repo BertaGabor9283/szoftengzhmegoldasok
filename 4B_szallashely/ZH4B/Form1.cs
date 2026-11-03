@@ -29,7 +29,11 @@ namespace ZH4B
                     orderby x.SzallasNev
                     select x;
 
-            szallashelyBindingSource.DataSource = l.ToList();
+            var list = l.ToList();
+            szallashelyBindingSource.DataSource = list;
+
+            // üres lista esetén a CurrentChanged nem biztos, hogy lefut
+            if (list.Count == 0) ReadSzobak();
         }
 
         // ④ jobb lista: vendégek (itt nincs szűrés)
@@ -67,7 +71,11 @@ namespace ZH4B
                     orderby x.SzobaSzama
                     select x;
 
-            szobaBindingSource.DataSource = l.ToList();
+            var list = l.ToList();
+            szobaBindingSource.DataSource = list;
+
+            // üres lista esetén a CurrentChanged nem biztos, hogy lefut
+            if (list.Count == 0) ReadFoglalasok();
         }
 
         // ⑦ a kiválasztott szoba foglalásai
@@ -95,6 +103,28 @@ namespace ZH4B
             foglalasBindingSource.DataSource = l.ToList();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // ⑨ új foglalás felvétele (személyek száma: 1)
         private void buttonAdd_Click(object sender, EventArgs e)
         {
@@ -118,7 +148,7 @@ namespace ZH4B
             }
             catch (Exception ex)
             {
-                context.Entry(newFoglalas).State = EntityState.Detached;
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -137,6 +167,7 @@ namespace ZH4B
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -157,6 +188,7 @@ namespace ZH4B
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -173,26 +205,35 @@ namespace ZH4B
         // Ⓐ a szálláshelyek neveinek mentése XML-be
         private void buttonSaveXml_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
-            sfd.Filter = "XML fájl (*.xml)|*.xml";
-            sfd.FileName = "szallashelyek.xml";
-            if (sfd.ShowDialog() != DialogResult.OK) return;
-
-            var szallashelyek = (from x in context.Szallashely
-                                 orderby x.SzallasNev
-                                 select new SzallashelyXml
-                                 {
-                                     SzallasId = x.SzallasId,
-                                     SzallasNev = x.SzallasNev
-                                 }).ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<SzallashelyXml>));
-            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+            using (SaveFileDialog sfd = new SaveFileDialog())
             {
-                serializer.Serialize(sw, szallashelyek);
-            }
+                sfd.Filter = "XML fájl (*.xml)|*.xml";
+                sfd.FileName = "szallashelyek.xml";
+                if (sfd.ShowDialog() != DialogResult.OK) return;
 
-            MessageBox.Show("A mentés sikeres.");
+                try
+                {
+                    var szallashelyek = (from x in context.Szallashely
+                                         orderby x.SzallasNev
+                                         select new SzallashelyXml
+                                         {
+                                             SzallasId = x.SzallasId,
+                                             SzallasNev = x.SzallasNev
+                                         }).ToList();
+
+                    XmlSerializer serializer = new XmlSerializer(typeof(List<SzallashelyXml>));
+                    using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                    {
+                        serializer.Serialize(sw, szallashelyek);
+                    }
+
+                    MessageBox.Show("A mentés sikeres.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
         }
     }
 }
