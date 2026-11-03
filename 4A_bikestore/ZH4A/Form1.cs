@@ -136,7 +136,10 @@ namespace ZH4A
             }
             catch (Exception ex)
             {
-                context.Entry(newItem).State = EntityState.Detached;
+                // a relációs javítás miatt az új elem bekerülhetett a kapcsolódó gyűjteményekbe is
+                order.OrderItems.Remove(newItem);
+                product.OrderItems.Remove(newItem);
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
@@ -160,36 +163,66 @@ namespace ZH4A
             }
             catch (Exception ex)
             {
+                ResetFailedChanges();
                 MessageBox.Show(ex.Message);
             }
 
             ReadItems();
         }
 
+        // sikertelen mentés után a context-ben maradt hibás változások visszaállítása,
+        // különben minden további SaveChanges() újra ugyanazt a hibát dobná
+        void ResetFailedChanges()
+        {
+            foreach (var entry in context.ChangeTracker.Entries().ToList())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+        }
+
         // Ⓐ vásárlók (e-mail, név) mentése XML-be
         private void buttonSaveXml_Click(object sender, EventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
+            using SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "XML fájl (*.xml)|*.xml";
             sfd.FileName = "customers.xml";
             if (sfd.ShowDialog() != DialogResult.OK) return;
 
-            var customers = (from x in context.Customers
-                             orderby x.Email
-                             select new CustomerXml
-                             {
-                                 Email = x.Email,
-                                 FirstName = x.FirstName,
-                                 LastName = x.LastName
-                             }).ToList();
-
-            XmlSerializer serializer = new XmlSerializer(typeof(List<CustomerXml>));
-            using (StreamWriter sw = new StreamWriter(sfd.FileName))
+            try
             {
-                serializer.Serialize(sw, customers);
-            }
+                var customers = (from x in context.Customers
+                                 orderby x.Email
+                                 select new CustomerXml
+                                 {
+                                     Email = x.Email,
+                                     FirstName = x.FirstName,
+                                     LastName = x.LastName
+                                 }).ToList();
 
-            MessageBox.Show("A mentés sikeres.");
+                XmlSerializer serializer = new XmlSerializer(typeof(List<CustomerXml>));
+                using (StreamWriter sw = new StreamWriter(sfd.FileName))
+                {
+                    serializer.Serialize(sw, customers);
+                }
+
+                MessageBox.Show("A mentés sikeres.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
     }
 }
